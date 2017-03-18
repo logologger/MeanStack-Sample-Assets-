@@ -1,0 +1,38 @@
+<div ng-controller="assetDetailController">
+<p class="lead">Desk Allocated to you  <b>{{DeskNumber}}</b></p> 
+
+<p class="lead">Your detailed Asset information here.</p>
+
+    
+
+
+
+
+<table class="table-hover table-responsive" datatable="ng">
+<thead class="thead-inverse">
+    <tr>
+        <th>AssetType</th>
+        <th>Asset Model</th>
+        <th>Processor</th>
+        <th>RAM</th>
+        <th>HDD</th>
+        <th>Version</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="asset in DisplayTable" >
+        <td>{{asset.AssetType.AssetType}}</td>
+        <td>{{asset.AssetModel.AssetModel}}</td>
+        <td>{{asset.Processor.Processor}}</td>
+        <td>{{asset.RAM.RAM}}</td>
+        <td>{{asset.HDD.HDD}}</td>
+        <td>{{asset.OSVersion[0].OSVersion}}</td>
+    </tr>
+    </tbody>
+</table> 
+
+
+<input id="add" type="image" ng-src="./libs/image/add_btn.png" alt="Add" ng-click="displayAsset()" />
+<label for="id">click the plus button to add another asset</label>
+
+</div>

@@ -1,0 +1,78 @@
+angular.module('deskController',['DeskService'])
+
+.controller('DeskController',function(DService,$scope,$location, CommonDataFactory)
+           {
+    
+    var vm=this;
+    
+    //to show all the desk in the  select option
+    vm.AllDesks=DService.giveAll()
+   .success(function(data){
+       
+       vm.AllDesks=data;
+   })
+    
+    //capture the desk details here and put them inside 
+    //EmployeeDesk Collection
+    vm.submitDeskDetails=function()
+    {
+        //get the user id and desk id from here
+        
+        console.log("Getting the SubmitDesk Details from the Server "+vm.selectedDesk+"User is "+vm.user);
+        var selectedDesk=JSON.parse(vm.selectedDesk);
+        console.log("Pyar wala "+typeof selectedDesk);
+         CommonDataFactory.setDeskNo(selectedDesk.Desk);
+        
+        DService.saveDesk(vm.selectedDesk).
+        success(function(data){
+          
+            
+            $location.path('/submit');
+        });
+        
+        
+    }
+    
+    
+//    vm.deskCheck=DService.deskCheck()
+//    .success(function(data){
+//            
+//            console.log("Desk checking "+data.result);
+////            return data;
+//            if(data.result===true){
+////                vm.deskCheck_controller=true;
+//                
+//                $location.path('/desk');
+//            }
+//            else{
+////                 vm.deskCheck_controller=false;
+//                $location.path('/asset');
+//            }
+//        });
+//    
+//    console.log("coming to controller value of  {{desk.deskCheck}}  is "+ JSON.stringify(vm.deskCheck_controller));
+//    vm.checkDeskDetails=function(){
+//        
+////       console.log(DService.checkDesk());
+//        
+//        
+//        vm.checkDesk=DService.checkDesk()
+//        .success(function(data){
+//            
+//          console.log("chceking desk"+JSON.stringify(data));  
+//            
+//            if(data.result===false)
+//                {
+////                   $location.path= 
+//                }
+//            else{
+//                
+//            }
+//        });
+//       
+//    }
+    
+    
+    
+})
+

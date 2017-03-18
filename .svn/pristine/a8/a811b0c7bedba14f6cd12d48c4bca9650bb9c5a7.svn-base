@@ -1,0 +1,68 @@
+angular.module('AssetService',[])
+.factory('assetService',function($http,$q,$timeout){
+    
+    
+    var assetServer={};
+    
+    assetServer.assetSave=function(data){
+        console.log("Sending this data "+JSON.stringify(data)); 
+        return $http.post('/api/assetSave',{data});
+
+    }
+    
+
+    assetServer.assetDisplay=function(){
+    	 return $http.get('/api/getAllAsset');
+     	 //console.log("Displaying data"+JSON.stringify(a));
+    }
+    
+    assetServer.removeAsset=function(assetId){
+        
+        return $http.delete('/api/deleteRow/'+assetId);
+    } 
+    assetServer.updateAsset=function(asset){
+        
+        return $http.put('/api/updateRow',asset);
+    }
+    
+    assetServer.checkAssetID=function(assetID){
+        
+        return $http.post('/api/checkAssetIDUnique',assetID);
+    }
+    
+    assetServer.assetPhoneTabDisplay=function(){
+        return $http.get('/api/getPhoneTabAsset');
+    }
+    
+    assetServer.getUser=function() {
+        var deferred = $q.defer();
+        var employeeObj=$http.get('/api/CheckAdmin');
+        var employeeObj1=JSON.stringify(employeeObj);
+         var EmpObj=JSON.parse(employeeObj1);
+            
+        $timeout(function() {
+            
+         console.log(employeeObj);
+         console.log(employeeObj.$$state.value.data.Admin);
+
+          deferred.resolve({ username: 'me', isAdmin: employeeObj.$$state.value.data.Admin});
+        },500);
+
+            
+        return deferred.promise;
+      }
+    
+    
+     assetServer.defaultLink=function(){
+         
+        return $http.get('/api/defaulterlink');
+        //console.log("default this data "+JSON.stringify(data)); 
+    }
+    assetServer.emptyDeskLink=function(){
+         
+        return $http.get('/api/emptydesklink');
+        //console.log("default this data "+JSON.stringify(data)); 
+    }
+    
+    return assetServer;
+})

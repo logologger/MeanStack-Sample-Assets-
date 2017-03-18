@@ -1,0 +1,1099 @@
+//var mongoose=require('mongoose');
+//var ObjectId=mongoose.Schema.ObjectId;
+
+
+
+
+var ObjectID = require('../../node_modules/mongodb').ObjectID;
+var User=require('../models/user');
+var Story=require('../models/story');
+var Employee=require('../models/Employee');
+var Desk=require('../models/Desk');
+var Accessory=require('../models/Accessory');
+var EmployeeDesk=require('../models/EmployeeDesk');
+var EmployeeAsset=require('../models/EmployeeAsset');
+var AssetType = require('../models/AssetType');
+var AssetModel = require('../models/AssetModel');
+var Processor = require('../models/Processor');
+var RAM = require('../models/RAM');
+var HDD = require('../models/HDD');
+var OSVersion = require('../models/OSVersion');
+var Location = require('../models/Location');
+var EmployeeLocation = require('../models/EmployeeLocation');
+
+var config=require('../../config');
+var secretKey=config.secretKey;
+
+var jsonwebtoken=require('jsonwebtoken');
+function createToken(user)
+{
+   var token= jsonwebtoken.sign({
+       id:user._id,
+        name:user.name,
+        username:user.userName
+        
+    },secretKey,
+                     {  
+        expiresInMinute:1440
+    });
+    return token;
+    
+}
+
+
+module.exports=function(app,express,io)
+{
+    var api=express.Router();
+    api.post('/signup',function(req,res)
+            {
+       
+        var user=new User({
+            
+            name:req.body.name,
+            userName:req.body.username,
+            password:req.body.password
+            
+        });//create the User pbject
+      
+        
+        var token=createToken(user);
+        console.log(user.userName);
+        //save the User JSON object in the database
+        user.save(function(err)
+                 {
+           
+            if(err)
+                {
+//                    res.json({"message":"Error in connecting to database"});
+                    console.log("There is error in saving to database");
+                    res.send(err);
+                    return;
+                }
+           
+                res.json({
+                    "success":true,
+                    "message":"User has been created",
+                    "token":token
+                });
+           
+        });
+        
+        
+        
+        
+    });
+    api.get('/users',function(req,res)
+           {
+        Employee.find({},function(err,users)
+                 {
+            if(err)
+                {
+                    res.send(err);
+                    return;
+                }
+            res.json(users);
+                
+            
+        });
+        
+    });
+    api.post('/login',function(req,res)
+           {
+       
+        Employee.findOne({
+            EmployeeID:req.body.username
+        }).select('Password').exec(function(err,user)
+         {
+            console.log("user"+user);
+            
+            if(err)
+                throw err;
+            if(!user){
+                res.send({"message":"*Employee-ID does not exist."});
+            }
+            else if(user)
+                {
+                    user.comparePassword(req.body.password, function(err, isMatch){
+                        if (err) throw err;
+                        if(!isMatch)
+                       {
+                          return res.send({"message":"*Password is wrong."}); 
+                           
+                       } else {
+                            var token=createToken(user);
+                        return res.json({
+                           success:true,
+                            message:"Successfully logged in",
+                            token:token
+                            
+                        });
+                    }
+                    });
+                }
+        });
+    });
+    api.use(function(req,res,next)
+           {
+        console.log("Somebody Came to our api");
+        var token=req.body.token || req.param('token') || req.headers['x-access-token'];
+        if(token)
+            {
+                jsonwebtoken.verify(token,secretKey,function(err,decoded)
+                                   {
+                    if(err)
+                        {
+                        res.status(403).send({success:false,message:"wrong Token"})    
+                        }
+                    else{
+                        req.decoded=decoded;
+                        next();
+                    }
+                });
+            }
+        else{
+            res.status(403).send({success:false,message:"No token found"});
+        }
+    });
+    api.route('/')
+        .post(function(req,res)
+        {
+       var story=new Story({
+           
+           creator:req.decoded.id,
+           content:req.body.content
+       });
+       story.save(function(err,newStory)
+                 {
+           if(err)
+               {
+                   res.send(err);
+                   return;
+               }
+           io.emit('story',newStory);
+           res.json({message:"Story created Successfully"});
+       });
+       
+   })
+        .get(function(req,res)
+        {
+        Story.find({
+            creator:req.decoded.id
+        },function(err,stories)
+                  {
+            if(err)
+                {
+                    res.send(err);
+                    return;
+                }
+          res.json(stories);  
+        });
+    });
+    api.get('/me',function(req,res){
+        
+       res.json(req.decoded); 
+
+    });
+    api.get('/CheckAdmin',function(req,res){
+        
+           Employee.find({
+            
+           _id:req.decoded.id
+            
+        },function(err,data){
+            if(err){
+                console.log("Employee decoded "+err);
+            }
+           var employeeObj=JSON.parse(JSON.stringify(data));
+            var returnedObj={};
+               returnedObj.Admin=employeeObj[0].Admin;
+               res.json(returnedObj);
+             // console.log("Something came or not "+employeeObj[0].Admin);
+            
+           });
+    });
+    api.get('/getUserID',function(req,res){
+        
+         Employee.find({
+            
+           _id:req.decoded.id
+            
+        },function(err,data){
+            if(err){
+                console.log("Employee decoded "+err);
+            }
+           var employeeObj=JSON.parse(JSON.stringify(data));
+            var returnedObj={};
+               returnedObj.Admin=employeeObj[0].EmployeeID;
+               res.json(returnedObj);
+             // console.log("Something came or not "+employeeObj[0].Admin);
+            
+           });
+        
+    });
+api.get('/locationlink',function(req,res){
+        
+        console.log("Inside location api called");
+        
+        Location.find({},function(err,desk)
+                 {
+            if(err)
+                {
+                    res.send(err);
+                    return;
+                }
+//            console.log("desk is what "+desk);
+            res.json(desk);
+        });
+    });
+    api.get('/desk',function(req,res){
+        
+        console.log("Inside Desk api called");
+        
+        Desk.find({isFilled:false},function(err,desk)
+                 {
+            if(err)
+                {
+                    res.send(err);
+                    return;
+                }
+//            console.log("desk is what "+desk);
+            res.json(desk);
+        });
+    });
+    api.get('/assetType',function(req,res){
+        
+        console.log("Inside  assetType api called");
+        
+        AssetType.find({},function(err,assetType)
+                 {
+            if(err)
+                {
+                    res.send(err);
+                    return;
+                }
+           
+            res.json(assetType);
+        });
+    });
+    api.get('/assetModel',function(req,res){
+        
+        console.log("Inside  assetModel api called");
+        
+        AssetModel.find({},function(err,assetModel)
+                 {
+            if(err)
+                {
+                    res.send(err);
+                    return;
+                }
+            
+            res.json(assetModel);
+        });
+    });
+    api.get('/processor',function(req,res){
+        
+        console.log("Inside  assetModel api called");
+        
+        Processor.find({},function(err,processor)
+                 {
+            if(err)
+                {
+                    res.send(err);
+                    return;
+                }
+            
+            res.json(processor);
+        });
+    });
+    api.get('/ram',function(req,res){
+        
+        console.log("Inside  assetModel api called");
+        
+        RAM.find({},function(err,ram)
+                 {
+            if(err)
+                {
+                    res.send(err);
+                    return;
+                }
+           
+            res.json(ram);
+        });
+    });
+    api.get('/hdd',function(req,res){
+        
+        console.log("Inside  assetModel api called");
+        
+        HDD.find({},function(err,hdd)
+                 {
+            if(err)
+                {
+                    res.send(err);
+                    return;
+                }
+            
+            res.json(hdd);
+        });
+    });
+    api.get('/osversion',function(req,res){
+        
+        console.log("Inside  assetModel api called");
+        
+        OSVersion.find({},function(err,osversion)
+                 {
+            if(err)
+                {
+                    res.send(err);
+                    return;
+                }
+            
+            res.json(osversion);
+        });
+    });
+    api.get('/accessory',function(req,res){
+        
+        console.log("Inside  assetModel api called");
+        
+        Accessory.find({},function(err,accessory)
+                 {
+            if(err)
+                {
+                    res.send(err);
+                    return;
+                }
+            
+            res.json(accessory);
+        });
+    });
+    api.post('/deskSave',function(req,res){
+        
+        //Delete the Desk that is already there if any is there and Then Newly save it
+        //So first we will check whether the EmployeeDesk with that EmployeeID is there or not
+        //If Not then directly call the Api 
+        //Else Remove the previuos one and call the Api
+        EmployeeDesk.find({
+            EmployeeID:req.decoded.id
+        },function(err,employeeDeskinfo){
+            
+           console.log("Desk to this Employee is "+employeeDeskinfo); 
+            if(employeeDeskinfo!=0){
+                
+                //Just Edit the Previous Desk Info isFilled Parameter to false
+                var employeeDesk_information_object=JSON.parse(JSON.stringify(employeeDeskinfo));
+                var previous_Desk=employeeDesk_information_object[0].DeskNo;
+                
+                console.log("Previous Desk to the Employee is "+previous_Desk);
+                //Call the update Query here 
+                
+                Desk.update({_id:previous_Desk},{$set:{isFilled:false}},function(err,result){
+                    if(err){
+                        
+                        console.log("There is Error in making False the Desk");
+                        res.send(err);
+                    }
+                    console.log("Desk Value Updated Successfully");
+                });//This can go Parallel with other
+                
+                
+               //EmployeeDesk.populate(DeskNo,DeskNo);
+                
+                
+                //Means He has a previous Desk and Now we will 
+                
+                //means Desk are already allocated to him so we will remove everything from the EmployeeDesk of that EmployeeId
+                //Previous Desk isFilled should become false now
+                
+                EmployeeDesk.remove({EmployeeID:req.decoded.id},function(Removeerr,removeResult){
+                    if(err){
+                        console.log("error in EmployeeDesk Removing "+Removeerr);
+                        res.send(err);
+                    }
+                    
+                    console.log("Desk removed Successfullly "+removeResult);
+                    
+                    //After Removing Update the Desk isFilled to true and Insert the Desk reference inside EmployeeDesk
+                    
+                     console.log("user is   "+req.decoded.id+" Desk is "+req.body._id);
+            var employeedesk=new EmployeeDesk({
+            EmployeeID:req.decoded.id,
+            DeskNo:req.body._id
+            
+        });
+        
+       
+       
+        Desk.update({_id:req.body._id},{$set:{isFilled:true}},function(DeskUpdateerr,result){
+            
+            if(err){
+                console.log("Error in Desk Service "+DeskUpdateerr);
+                return err;
+            }
+            console.log("IsFillled Field  in desk updated Successfully")
+        });  
+            
+        
+        
+        employeedesk.save(function(errEmployeeDesk,employee_desk){
+            
+            if(err)
+                {
+                    res.send(errEmployeeDesk);
+                    return;
+                }
+            
+            
+            console.log("EmployeeDesk saved Successfully");
+            var success={};
+            success.message="Desk Allocated Successfully";
+            res.json(success);
+            //After Desk Allocation we have to give him Asset Details
+        });
+            
+                    
+                    
+               // });
+                
+            });
+            }//End of if clause for checking whether he has already one Desk or not
+            
+            
+            else{
+            //Just save the EmployeeDesk information here
+            
+            console.log("user is   "+req.decoded.id+" Desk is "+req.body._id);
+            var employeedesk=new EmployeeDesk({
+            EmployeeID:req.decoded.id,
+            DeskNo:req.body._id
+            
+        });
+        
+       
+       
+        Desk.update({_id:req.body._id},{$set:{isFilled:true}},function(DeskUpdateerr,result){
+            
+            if(err){
+                console.log("Error in Desk Service "+DeskUpdateerr);
+                return err;
+            }
+            console.log("IsFillled Field  in desk updated Successfully")
+        });  
+            
+        
+        
+        employeedesk.save(function(errEmployeeDesk,employee_desk){
+            
+            if(err)
+                {
+                    res.send(errEmployeeDesk);
+                    return;
+                }
+            
+            
+            console.log("EmployeeDesk saved Successfully");
+            var success={};
+            success.message="Desk Allocated Successfully";
+            res.json(success);
+            //After Desk Allocation we have to give him Asset Details
+        });
+                
+                
+            }//end of else clause
+            
+            
+        });
+    });
+        
+       
+     api.post('/locationSave',function(req,res){
+        
+       
+       console.log("user is   "+req.decoded.id+" Location is "+req.body._id);
+        var employeelocation=new EmployeeLocation({
+           EmployeeID:req.decoded.id,
+            Location:req.body._id
+            
+        });
+        
+        employeelocation.save(function(err,employee_location){
+            
+            if(err)
+                {
+                    res.send(err);
+                    return;
+                }
+            var success={};
+            success.message="Location Allocated";
+            res.json(success);
+            //After Desk Allocation we have to give him Asset Details
+        });
+        
+    });
+ 
+        
+
+    api.get('/checkDesk',function(req,res){
+        
+        //Here we will check whether has been allocated Desk or not
+        
+        console.log("/checkDesk Api called");
+        EmployeeDesk.find({
+            EmployeeID:req.decoded.id
+        },function(err,EmployeeId){
+            
+            if(err){
+                res.send(err);
+                return;
+            }
+            
+//            console.log("returned data is "+EmployeeId);
+           
+            
+            console.log("typeof Desk  object is "+( EmployeeId==0)+"  conditon is "+(typeof EmployeeId.DeskNo==="undefined"))
+            
+            
+            
+            
+            var success={};
+                
+            
+            
+            if(EmployeeId==0)
+                {
+                     success.result=false;
+                     res.json(success);
+                }
+            else{
+                
+                
+                 var EmployeeID_obj=JSON.parse(JSON.stringify(EmployeeId));
+                
+                
+            console.log("Returned ID is "+EmployeeID_obj[0]._id);
+            var Desk_id=EmployeeID_obj[0].DeskNo;
+                
+                success.result=true;
+                //Get the Desk No from here
+               /* Desk.find({"_id":ObjectId("570d2ba08797cb850edf4009")},{"Desk":1}*/
+               
+            
+//               var Desk_id_o= mongoose.Types.ObjectId(Desk_id);
+//                console.log(typeof Desk_id_o);
+                 var DeskNumber_value;
+                var desk_value="";
+                Desk.find({"_id":ObjectID(Desk_id)},function(err,DeskNumber){
+                    if(err){
+                        console.log(err);
+                     return;   
+                    }
+                    
+                    
+//                    var string_j=JSON.stringify(DeskNumber);
+//                        var json_obj=JSON.parse(string_j);
+//                        console.log(json_obj[0].Desk);
+//                        console.log(json_obj);
+                    console.log("DeskNumber"+(DeskNumber));
+                     DeskNumber_value=JSON.parse(JSON.stringify(DeskNumber));
+                    console.log("Desk is "+DeskNumber_value[0].Desk);
+                     desk_value=DeskNumber_value[0].Desk;
+                     console.log("desk_value"+desk_value);
+                    success.DeskNo=desk_value;
+                     res.json(success);
+                    
+                })
+               
+                  
+                
+            }
+//            res.json(EmployeeId);
+        })
+    });
+    api.post('/assetSave',function(req,res){
+
+        
+        
+        console.log(req.body);
+           var employeeasset=new  EmployeeAsset({
+               
+               EmployeeID:req.decoded.id,
+               AssetType:req.body.data.assetType,
+               AssetModel:req.body.data.assetModel,
+               Processor:req.body.data.processorValue,
+               RAM:req.body.data.ramValue,
+               HDD:req.body.data.hddValue,
+               OSVersion:req.body.data.osversionValue,
+               AssetID:req.body.data.assetId,
+               Accessory:req.body.data.Accessory
+               
+               
+           });
+        
+        employeeasset.save(function(err){
+            
+            
+             if(err)
+                {
+//                    res.json({"message":"Error in connecting to database"});
+                    console.log("There is error in saving to database");
+                    res.send(err);
+                    return;
+                }
+           
+                res.json({
+                    "success":true,
+                    "message":"Asset Information has been saved",
+                    
+                });
+           
+        })
+
+    });
+    api.get('/getAllAsset',function(req,res){
+        
+        
+        //Currently it will give only Dekstop Assets
+        var query=EmployeeAsset.find({
+            
+            EmployeeID:req.decoded.id
+            
+        });
+        
+        AssetType.find({"AssetType":"Desktop"}).select('AssetType').exec(function(err, data) {
+			if(err) {
+				console.log(err);
+				return res.status(500).json({"error": true, "message": err});
+			}
+            
+            console.log("value of all"+data);
+            console.log("Stringifying it "+JSON.stringify(data[0]._id));
+            //console.log("Parsing it is "+JSON.parse(data));
+			
+
+            
+            query.populate('RAM HDD Processor AssetModel AssetType OSVersion Accessory','RAM HDD Processor AssetModel AssetType OSVersion Accessory');
+        
+        //find the Desktop Object ID here
+        
+        
+        query.find({AssetType:ObjectID(data[0]._id)});
+       /* query.find({"$or":[
+            {
+                AssetType:ObjectID("5723906a07abe1a91acdf42f")
+            },{
+                AssetType:ObjectID("5723906a07abe1a91acdf430")
+            }
+        ]});*/
+        query.exec(function(err,data){
+          if(err)
+          {
+            console.log("Error message "+err);
+          }
+          else
+          {
+              
+            console.log("Data from Population  is  "+data);
+            EmployeeAsset.find({},{"AssetID":1,_id:0},function(err,AssetID){
+                
+                var AssetIDobj=JSON.parse(JSON.stringify(AssetID));
+                data.AssetID=AssetIDobj;
+                //console.log("AssetID is " +JSON.stringify(AssetID));
+                
+            });
+            res.json(data);
+          }
+        });
+            
+            
+        });
+
+        
+
+      
+
+
+
+        //function(err,EmployeeAssetData){
+            
+        //     var EmpAssetData=JSON.parse(JSON.stringify(EmployeeAssetData));
+        //     console.log(EmpAssetData);
+        //     // console.log(EmpAssetData[2].RAM);
+        //     //first get the length of EmpAssetData
+        //     //run a loop and store all info in an array of JSON objects
+        //     ///return that JSON object
+        //     var responseObject=[];
+        //     responseObject[i]=indivual_response
+        //     var indivual_response={};
+        //     for(var i=0;i<EmpAssetData.length;i++){
+                
+            
+        //     RAM.find({"_id":ObjectID(EmpAssetData[i].RAM)},function(err,RAM){
+                
+        //         var RAM_data=JSON.parse(JSON.stringify(RAM));
+        //                            if(RAM_data[0]){
+        //         console.log(RAM_data[0].RAM);
+        //         indivual_response.RAM=RAM_data[0].RAM;
+        //            }
+
+
+        //     })
+        //     HDD.find({"_id":ObjectID(EmpAssetData[i].HDD)},function(err,HDD){
+                
+        //         var HDD_data=JSON.parse(JSON.stringify(HDD));
+        //                            if(HDD_data[0]){
+        //         console.log(HDD_data[0].HDD);
+        //         indivual_response.HDD=HDD_data[0].HDD;
+        //            }
+
+
+        //     })
+        //     Processor.find({"_id":ObjectID(EmpAssetData[i].Processor)},function(err,Processor){
+                
+        //         var Processor_data=JSON.parse(JSON.stringify(Processor));
+        //                            if(Processor_data[0]){
+        //         console.log(Processor_data[0].Processor);
+        //         indivual_response.Processor=Processor_data[0].Processor;
+        //            }
+
+
+        //     })
+        //     AssetType.find({"_id":ObjectID(EmpAssetData[i].AssetType)},function(err,AssetType){
+                
+        //         var AssetType_data=JSON.parse(JSON.stringify(AssetType));
+        //                            if(AssetType_data[0]){
+        //         console.log(AssetType_data[0].AssetType);
+        //         indivual_response.AssetType=AssetType_data[0].AssetType;
+        //            }
+
+
+        //     })
+
+        //    AssetModel.find({"_id":ObjectID(EmpAssetData[i].AssetModel)},function(err,AssetModel){
+                
+        //         var AssetModel_data=JSON.parse(JSON.stringify(AssetModel));
+        //                            if(AssetModel_data[0]){
+        //         console.log(AssetModel_data[0].AssetModel);
+        //         indivual_response.AssetModel=AssetModel_data[0].AssetModel;
+        //            }
+
+
+        //     })
+
+            
+        //     //create an array of JSON objects
+        //     // responseObject[i]=indivual_response;//Thiere is some twaek required here
+        //       responseObject[i]=indivual_response;
+        //       console.log("Respoonse"+responseObject);
+
+        //       res.json(responseObject);
+
+        //     }
+        //     // console.log(responseObject);//same goes here
+            
+            
+        // })
+        
+    });
+    api.get('/getPhoneTabAsset',function(req,res){
+        
+        
+         AssetType.find({"$or":[
+             
+             {
+                 "AssetType":"Tablet"
+             },
+             {
+                 "AssetType":"Phone"
+                 
+             }]}).select('AssetType').exec(function(err, data) {
+			if(err) {
+				console.log(err);
+				return res.status(500).json({"error": true, "message": err});
+			}
+            
+            console.log("value of all"+data);
+            console.log("Stringifying it fromn Phone tablet is  "+JSON.stringify(data[0]._id));
+        
+        
+        
+        
+         var query=EmployeeAsset.find({
+            
+            EmployeeID:req.decoded.id
+            
+        });
+
+        query.populate('RAM HDD Processor AssetModel AssetType OSVersion Accessory','RAM HDD Processor AssetModel AssetType OSVersion Accessory');
+        //query.find({AssetType:ObjectID("5723906a07abe1a91acdf42e")});
+        query.find({"$or":[
+            {
+                AssetType:ObjectID(data[0]._id)
+            },{
+                AssetType:ObjectID(data[1]._id)
+            }
+        ]});
+        query.exec(function(err,data){
+          if(err)
+          {
+            console.log("Error message "+err);
+          }
+          else
+          {
+              
+            console.log("Data from Population  is  "+data);
+            EmployeeAsset.find({},{"AssetID":1,_id:0},function(err,AssetID){
+                
+                var AssetIDobj=JSON.parse(JSON.stringify(AssetID));
+                data.AssetID=AssetIDobj;
+                //console.log("AssetID is " +JSON.stringify(AssetID));
+                
+            });
+            res.json(data);
+          }
+        });
+
+      
+
+
+        
+    });
+    });
+    
+    api.get('/checkEmployeeAsset',function(req,res){
+            var success={};
+             EmployeeAsset.find({
+            
+            EmployeeID:req.decoded.id 
+        },function(err,data){
+                if(err)
+                {
+                    res.json(err);
+                }
+                if(data==0)
+                       {
+
+                        success.result=false;
+                       } 
+                       else
+                       {
+                        success.result=true;
+                       }
+                       res.json(success);
+        })
+
+        });
+    api.post('/assetModelBasedonAssetType',function(req,res){
+        
+       console.log("assetModelBasedonAssetType api called");
+        console.log("request body is "+req.body.AssetType);
+          AssetModel.find({"AssetType":req.body.AssetType},function(err,assetModel)
+                 {
+            if(err)
+                {
+                    res.send(err);
+                    return;
+                }
+            
+            res.json(assetModel);
+        });
+        
+    });
+    api.delete('/deleteRow/:assetId',function(req,res){
+        
+     console.log("DeleteRow Api called "+req.params.assetId);
+     
+        EmployeeAsset.remove({
+            
+            AssetID:req.params.assetId
+        },function(err,message){
+            
+            if(err){
+                res.send(err);
+                return err;
+            }
+            res.json({"message":"Successfully Deleted Asset"});
+        })
+    });
+    api.put('/updateRow',function(req,res){
+        
+        console.log("Updating Assets Row Api called");
+        //api should get old assetID in order to update the Assets
+        console.log("Updated Assets "+JSON.stringify(req.body));
+        EmployeeAsset.update({AssetID:req.body.AssetID},{$set:{OSVersion:req.body.OSVersion,RAM:req.body.RAM,HDD:req.body.HDD,Processor:req.body.Processor}},function(err,response){
+            
+            if(err){
+                
+                res.send(err);
+                return err;
+            }
+            res.json({"message":"Updated Successfully"})
+            
+        })
+        
+        
+        //find the Processor ID 
+        //find the RAM ID
+        //find the HDD Id
+        //find the OSVersion ID
+        
+    });
+    api.post('/checkAssetIDUnique',function(req,res){
+        
+        
+        console.log("Request AssetId for Checking  is "+req.body.Id);
+        
+        
+       EmployeeAsset.find({
+           AssetID:req.body.Id
+            
+       },function(err,result){
+           if(err){
+               
+               res.send(err);
+               return;
+           }
+           console.log("result from server is "+result);
+            var Assetresult={};
+           if(result==0){
+               
+               Assetresult.haveAsset=true;
+           }
+           else{
+                Assetresult.haveAsset=false;
+           }
+           res.json(Assetresult);   
+           
+       }); 
+        
+        
+        
+        
+    });
+    
+    
+    
+    api.get('/defaulterlink',function(req,res){
+        
+        
+
+       EmployeeAsset.find({}).select('EmployeeID').exec(function(err, data) {
+      if(err) {
+        console.log(err);
+        return res.status(500).json({"error": true, "message": err});
+      }
+      
+      var all = data.map(function(v, i) {return v.EmployeeID});
+      
+      Employee.find({_id: {$nin: all}}, function(err, edata) {
+        if(err) {
+          console.log(err);
+          return res.status(500).json({"error": true, "message": err});
+        }
+
+        return res.status(200).json(edata);
+      })
+    });
+  
+    });
+    api.get('/emptydesklink',function(req,res){
+        
+        
+
+       EmployeeDesk.find({}).select('DeskNo').exec(function(err, data) {
+      if(err) {
+        console.log(err);
+        return res.status(500).json({"error": true, "message": err});
+      }
+      
+      var all = data.map(function(v, i) {return v.DeskNo});
+      
+      Desk.find({_id: {$nin: all}}, function(err, edata) {
+        if(err) {
+          console.log(err);
+          return res.status(500).json({"error": true, "message": err});
+        }
+
+        return res.status(200).json(edata);
+      })
+    });
+  
+    });
+    
+    
+    
+    
+    api.get('/getDefaulterList',function(req,res){
+        
+        EmployeeAsset.find({}).select('EmployeeID').exec(function(err, data) {
+			if(err) {
+				console.log(err);
+				return res.status(500).json({"error": true, "message": err});
+			}
+            
+            console.log("Data from EmployeeAset is "+data);
+			
+			var all = data.map(function(v, i) {return v.EmployeeID});
+			
+            console.log("DAta from all mapping  is "+all+" typeof all is "+typeof all);
+            
+			Employee.find({_id: {$nin: all}}, function(err, edata) {
+				if(err) {
+					console.log(err);
+					return res.status(500).json({"error": true, "message": err});
+				}
+                
+               // console.log("final data from Employee is "+edata);
+
+				return res.status(200).json(edata);
+			})
+		});
+        
+    });
+    
+    api.get('/getEmptyDesk',function(req,res){
+        
+    });
+    api.get('/getEmployeewithoutDesk',function(req,res){
+        
+        
+    });
+    
+//    var Employee = require('../models/Employee');
+//    var EmployeeAsset = require('../models/EmployeeAsset');
+//    var EmployeeDesk = require('../models/EmployeeDesk');
+//    var Desk = require('../models/Desk');
+//   //Code for Checking Defaulters
+//    
+//    var adminCtrl = {
+//	defaulters: function(req, res) {
+//		EmployeeAsset.find({}).select('EmployeeID').exec(function(err, data) {
+//			if(err) {
+//				console.log(err);
+//				return res.status(500).json({"error": true, "message": err});
+//			}
+//			
+//			var all = data.map(function(v, i) {return v.EmployeeID});
+//			
+//			Employee.find({_id: {$nin: all}}, function(err, edata) {
+//				if(err) {
+//					console.log(err);
+//					return res.status(500).json({"error": true, "message": err});
+//				}
+//
+//				return res.status(200).json(edata);
+//			})
+//		});
+//	},
+//
+//	emptyDesks: function(req, res) {
+    
+    
+    
+//		
+//	}
+//}
+//
+//module.exports = adminCtrl;
+
+
+    
+    return api;
+}

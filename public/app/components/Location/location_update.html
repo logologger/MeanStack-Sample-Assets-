@@ -1,0 +1,33 @@
+<md-dialog aria-label="Update Your WorkPlace Location" ng-cloak>
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>Update Your Workplace Location</h2>
+      <span flex></span>
+      
+    </div>
+  </md-toolbar>
+  <md-dialog-content>
+    <div class="md-dialog-content">
+      <form ng-submit="$event.preventDefault()">
+        <md-input-container class="md-block">
+         <label value="">Select Location</label> 
+          <md-select  ng-model="editLocation"  >
+             <!--  <md-option  ng-repeat="data in loc.AllLocations"  ng-value="{{data.Location}}">{{data.Location}}</md-option> -->
+             
+             <!--  <md-option ng-value="{{data.Location}}" ng-repeat="data in loc.AllLocations">{{data.Location}}</md-option> -->
+            <!--  <md-option value="">--Select Location--</md-option> -->
+                    <md-option value="{{data.Location}}" ng-repeat="data in loc.AllLocations">{{data.Location}}</md-option>
+          </md-select>
+          </md-input-container>
+          <md-button  ng-click="loc.showItLocation($event); LocationValue=LocationFinal">SAVE</md-button>
+          <md-button  ng-click="loc.finish($event)">CANCEL</md-button>
+        
+      </form>
+    </div>
+  </md-dialog-content>
+    
+</md-dialog>
+
+
+
+

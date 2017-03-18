@@ -1,0 +1,51 @@
+angular.module('LocationController',['DeskService'])
+
+.controller('LocationController',function(DService,$scope,$location, CommonDataFactory)
+           {
+    
+    var vm=this;
+    
+    //to show all the desk in the  select option
+
+    vm.AllLocations=DService.giveAllLocation()
+   .success(function(data){
+       
+       vm.AllLocations=data;
+   })
+
+
+    vm.showItLocation=function()
+    {
+        //get the user id and desk id from here
+        
+        console.log("Getting the SubmitDesk Details from the Server "+$scope.editLocation);
+        var selectedLocation=JSON.parse($scope.editLocation);
+        console.log("Return type "+typeof selectedLocation);
+        CommonDataFactory.setLocation(selectedLocation.Location);
+         //$scope.LocationFinal=CommonDataFactory.getLocation();
+         $scope.LocationFinal=selectedLocation.Location;
+        // console.log("desk allocated is"+$scope.LocationFinal);
+
+        
+         DService.saveLocation(selectedLocation).
+        success(function(data){
+          
+            
+            
+        });
+        
+        
+    }
+
+  vm.showWing = function(thing) {
+          $scope.editLocation = angular.copy(thing); 
+
+
+
+          
+           
+           
+        };
+    
+
+    })

@@ -1,0 +1,22 @@
+<!--<P>HI Are you coming here </P> {{desk.deskCheck}}-->
+<!--<div ng-if="desk.deskCheck_controller">-->
+
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-4">
+<form  novalidate ng-submit="desk.submitDeskDetails()">
+    <p class="lead">Please Select Your Desk First </p>
+<select ng-model="desk.selectedDesk" class="form-control">
+
+
+<option    ng-repeat="data in desk.AllDesks" value="{{data}}">{{data.Desk}}</option>
+
+</select><br>
+<input class="btn btn-info" type="submit" name="submit" value="submit"/>    
+    </form>
+        </div>
+</div>
+<!--<button ng-click="desk.checkDeskDetails()">Check Desk</button>-->
+
+<!--</div>-->
+

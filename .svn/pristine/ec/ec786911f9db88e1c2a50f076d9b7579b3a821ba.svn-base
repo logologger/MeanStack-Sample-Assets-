@@ -1,0 +1,81 @@
+<div ng-controller="AdminController">
+<div class="container">
+<div class="row well alert-info">
+<label class="col-md-3 col-sm-6 col-xs-7"><b>Click for Defaulters List:</b></label>
+<button  class="col-md-2 col-sm-6 col-xs-4 btn btn-primary" ng-click="isDefault()"  type="button" value="See your asset details"  >Defaulter List</button></div>
+<div class="row well"><label class="col-md-3 col-sm-6 col-xs-7">Click for Asset Details</label>
+<button class="col-md-2 btn btn-primary col-sm-6 col-xs-4" ng-click="$location.path('/click')" type="button" value="See your asset details"  >Asset Details</button></div>
+<div class="row well">
+<label class="col-md-3 col-sm-6 col-xs-7">Click for Empty Desks</label>
+<button class="col-md-2 btn btn-primary col-sm-6 col-xs-4" ng-click="isEmptyDesk()"type="button" value="See your asset details"  >Empty Desk</button>
+</div>
+
+</div>
+</div>
+<!-- <div ng-show = "IsVisible">
+<form>
+
+<div ng-controller="assetDetailController">
+
+<table class="table">
+<thead class="thead-inverse">
+    <tr class="warning">
+        <th>EmployeeID</th>
+        <th>FirstName</th>
+        <th>LastName</th>
+        <th>Stream</th>
+        
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr ng-repeat="assetDefault in DisplayDefaultTable" class="warning">
+        
+        <td>{{assetDefault.EmployeeID}}</td>
+        <td>{{assetDefault.FirstName}}</td>
+        <td>{{assetDefault.LastName}}</td>
+        <td>{{assetDefault.Stream}}</td>
+        
+        
+    </tr>
+    </tbody>
+</table> 
+
+
+
+</div>
+	</form>
+	</div>
+
+	<div ng-show = "IsVisible1">
+<form>
+
+<div ng-controller="assetDetailController">
+
+<table class="table">
+<thead class="thead-inverse">
+    <tr class="warning">
+        <th>desk</th>
+        
+        
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr ng-repeat="assetDefault1 in DisplayDefaultTable1" class="warning">
+        
+        <td>{{assetDefault1.Desk}}</td>
+       
+        
+        
+    </tr>
+    </tbody>
+</table> 
+
+
+
+</div>
+	</form>
+	</div> -->
+
+</div>

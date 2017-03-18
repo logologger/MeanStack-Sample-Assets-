@@ -1,0 +1,74 @@
+<button  ng-click="assetInfo.AssetTable()" type="button" class="btn btn-success" value="See your asset details" style="float:right" >Asset Details</button>
+<p class="lead">Desk Allocated to you is <b>{{assetInfo.DeskNumber}}</b></p>
+
+<p class="lead">Please check your detailed Asset information here.</p>
+<div>
+    
+    
+	<form name="assetForm" ng-submit="assetInfo.submitAssetDetails()" novalidate>
+	 
+     <div >
+    <!--  <label>Asset Type</label> -->
+        <select  ng-model="assetInfo.assetTypeValue" class="col-xs-12 form-control" >
+        	<option value="">--SELECT ASSET TYPE--</option>
+        	<option  value="{{data}}" ng-repeat="data in assetInfo.AssetType">{{data.AssetType}}</option>
+        </select>
+        </div>
+        <br/>
+        <br>
+     <div >
+     <!-- <label>Asset Model</label> -->
+        <select  ng-model="assetInfo.assetModelValue" class="col-xs-12 form-control" >
+        <option value="">--SELECT ASSET MODEL--</option>
+        	<option value="{{data}}" ng-repeat="data in assetInfo.AssetModel">{{data.AssetModel}}</option>
+        </select>
+     </div>
+     <br/>
+     <br>
+      <div >
+     <!--  <label>Processor</label> -->
+       <select  ng-model="assetInfo.processorValue" class="col-xs-12 form-control" >
+       <option value="">--SELECT PROCESSOR--</option>
+       	 <option value="{{data}}" ng-repeat="data in assetInfo.Processor" >{{data.Processor}}</option>
+       </select>
+     </div>
+     <br/>
+     <br>
+     <div >
+     <!-- <label>Ram</label> -->
+       <select    ng-model="assetInfo.ramValue" class="col-xs-12 form-control" >
+       <option value="">--SELECT RAM--</option>
+       	 <option value="{{data}}" ng-repeat="data in assetInfo.RAM">{{data.RAM}}</option>
+       </select>
+     </div>
+     <br/>
+     <br>
+     <div >
+    <!--  <label>HDD</label> -->
+       <select   ng-model="assetInfo.hddValue" class="col-xs-12 form-control" >
+       <option value="">--SELECT HDD--</option>
+       	 <option value="{{data}}" ng-repeat="data in assetInfo.HDD" >{{data.HDD}}</option>
+       </select>
+     </div>
+     <br/>
+     <br>
+     <div >
+     <!-- <label>OS Version</label> -->
+       <select    ng-model="assetInfo.osversionValue" class="col-xs-12 form-control" >
+       <option value="">--SELECT OS VERSION--</option>
+         <option value="{{data}}" ng-repeat="data in assetInfo.OSVersion">{{data.OSVersion}}</option>
+       </select>
+
+
+     </div>
+
+<div ng-repeat="data in assetInfo.Accessory" style="float: left;">
+     <input type="checkbox" name="vehicle"><label>{{data.Accessory}}</label>
+     </div>
+     <br/>
+     <br>
+     <div class="col-md-6">
+     <input class="btn btn-primary" style="float: right; padding-left: 40px; padding-right: 40px;" type="submit" value="Submit" ng-disabled="assetForm.$invalid" />
+     </div>
+	</form>
+</div>

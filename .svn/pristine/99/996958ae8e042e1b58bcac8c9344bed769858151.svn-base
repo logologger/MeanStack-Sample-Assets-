@@ -1,0 +1,129 @@
+
+<button  ng-click="assetInfo.AssetTable()" type="button" class="btn btn-success" value="See your asset details" style="float:right" >Asset Details</button>
+ <div class="row">
+    <div class="col-md-4">
+<div ng-controller="LocationController as loc">
+ 
+<span class="lead">Your location is <b>{{assetInfo.LocationValue}}</b> &nbsp;&nbsp;<a ng-show="!showThing1" ng-click="loc.showItLoc(assetInfo.LocationValue);showThing1 = !showThing1"><span class="glyphicon glyphicon-pencil"></span></a></span>
+<!-- <span >Your location is</span>
+  <b>{{LocationFinal}}</b>
+ <button ng-show="!showThing1" ng-click="showItLoc(LocationFinal);showThing1 = !showThing1">edit location</button> -->
+ 
+<select  ng-model="editLocation" ng-show="showThing1" class="form-control">
+
+<option value="">Select Location</option>
+<option   ng-repeat="data in loc.AllLocations" value="{{data}}">{{data.Location}}</option>
+
+</select>
+
+<span class="glyphicon glyphicon-ok lead" style="color:blue" ng-click="loc.showItLocation(); showThing1 = false; LocationValue=LocationFinal" ng-show="showThing1" title="Update">SAVE</span>
+    
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span class="glyphicon glyphicon-remove lead" style="color:red" ng-click="showThing1 = false;" ng-show="showThing1" title="Cancel">CANCEL</span>
+</span>
+        </div>
+     </div>
+</div>
+<br>
+<p class="lead">Desk Allocated to you is <b>{{assetInfo.DeskNumber}}</b> &nbsp;&nbsp;<a href="/desk" ><span class="glyphicon glyphicon-pencil"></span></a></p>
+
+<p class="lead">Please Enter your detailed Asset information here.</p>
+<div class="row">
+    
+    
+	<form name="assetForm" ng-submit="assetInfo.submitAssetDetails()" novalidate>
+	 
+     <div class="col-md-6 col-md-offset-3">
+    <!--  <label>Asset Type</label> -->
+        <select  ng-model="assetInfo.assetTypeValue" 
+                ng-change="assetInfo.assetModelValueChange()" class="col-xs-12 form-control" name="AssetTypeSelect"  required>
+        	<option  value="">--SELECT ASSET TYPE--</option>
+        	<option  value="{{data}}" ng-repeat="data in assetInfo.AssetType">{{data.AssetType}}</option>
+        </select>
+         <span ng-show="assetForm.AssetTypeSelect.$touched && assetForm.AssetTypeSelect.$error.required" style="color:red">*Please Select Asset Type</span>
+          <br>
+        </div>
+        <br>
+        <br>
+     <div  class="col-md-6 col-md-offset-3" >
+     <!-- <label>Asset Model</label> -->
+        <select  ng-model="assetInfo.assetModelValue" class="col-xs-12 form-control" name="AssetModelSelect" required>
+        <option value="">--SELECT ASSET MODEL--</option>
+        <option value="{{data}}" ng-repeat="data in assetInfo.AssetModel">{{data.AssetModel}}</option>
+        </select>
+          <span ng-show="assetForm.AssetModelSelect.$touched && assetForm.AssetModelSelect.$error.required" style="color:red">*Please Select Asset Model</span>
+          <br>
+     </div>
+     <br>
+     <br>
+        
+     <div  class="col-md-6 col-md-offset-3" >
+     <!-- <label>Asset Model</label> -->
+        
+         <input type="text" ng-model="assetInfo.assetId" placeholder="ENTER ASSET ID" id="assetid" name="assetid" class="col-xs-12 form-control" maxlength="12" required/>
+            <span ng-show="assetForm.assetid.$touched && assetForm.assetid.$error.required" style="color:red">*AssetId is required.</span>
+            <p style="color:red">{{assetInfo.AssetDataCheck}}</p>
+         <br>
+         
+     </div>
+        <br>
+        <br>
+     <br>
+     <br>
+      <div  class="col-md-6 col-md-offset-3" ng-show="!assetInfo.others_hide">
+     <!--  <label>Processor</label> -->
+       <select  ng-model="assetInfo.processorValue" class="col-xs-12 form-control" >
+       <option value="">--SELECT PROCESSOR--</option>
+       	 <option value="{{data}}" ng-repeat="data in assetInfo.Processor" >{{data.Processor}}</option>
+       </select>
+     </div>
+     <br/>
+     <br>
+     <div  class="col-md-6 col-md-offset-3" ng-show="!assetInfo.others_hide">
+     <!-- <label>Ram</label> -->
+       <select    ng-model="assetInfo.ramValue" class="col-xs-12 form-control" >
+       <option value="">--SELECT RAM--</option>
+       	 <option value="{{data}}" ng-repeat="data in assetInfo.RAM">{{data.RAM}}</option>
+       </select>
+     </div>
+     <br/>
+     <br>
+     <div  class="col-md-6 col-md-offset-3" ng-show="!assetInfo.others_hide">
+    <!--  <label>HDD</label> -->
+       <select   ng-model="assetInfo.hddValue" class="col-xs-12 form-control" >
+       <option value="">--SELECT HDD--</option>
+       	 <option value="{{data}}" ng-repeat="data in assetInfo.HDD" >{{data.HDD}}</option>
+       </select>
+     </div>
+     <br/>
+     <br>
+     <div  class="col-md-6 col-md-offset-3" ng-show="!assetInfo.others_hide">
+     <!-- <label>OS Version</label> -->
+       <select   ng-model="assetInfo.osversionValue" class="col-xs-12 form-control" >
+       <option value="">--SELECT OS VERSION--</option>
+         <option value="{{data}}" ng-repeat="data in assetInfo.OSVersion">{{data.OSVersion}}</option>
+       </select>
+
+
+     </div>
+        <br>
+        <br>
+
+<div  class="col-md-6 col-md-offset-3">
+    <label class="checkbox-inline" ng-repeat="data in assetInfo.Accessory" >
+     <input type="checkbox" ng-model="assetInfo.Accessory_checked[$index]" ng-value="$index">
+    {{data.Accessory}}
+         </label>
+    </div>
+  
+    
+     <br/>
+     <br>
+     <div class="col-md-5 col-md-offset-2">
+         
+     <input class="btn btn-primary" style="float: right; padding-left: 40px; padding-right: 40px;" type="submit" value="Submit"  ng-disabled="assetForm.assetid.$invalid || assetForm.AssetModelSelect.$error.required || assetForm.AssetTypeSelect.$error.required"/>
+         
+     </div>
+         
+	</form>
+</div>

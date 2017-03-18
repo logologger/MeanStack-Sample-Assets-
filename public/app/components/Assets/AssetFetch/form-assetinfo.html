@@ -1,0 +1,100 @@
+<div ng-controller="LocationController as loc">
+ <span class="lead">Your Location is: <b>{{ loc.LocationValue!=null ? loc.LocationValue : assetInfo.LocationValue }}</b></span>
+  </div>
+<p class="nolead">Desk Allocated to you is : <b>{{assetInfo.DeskNumber}}</b> &nbsp;&nbsp;<a ui-sref="submit.desk" ><span class="glyphicon glyphicon-pencil"></span></a></p>
+<!-- <div class="form-group"> -->
+   <div ng-controller="assetDetailController" class="adminlink" ng-show="isAdmin()" >
+<a ui-sref="submit.adminlink"><span class="glyphicon glyphicon-user lead">Admin</span></a></div> 
+<div class="col-md-6 col-md-offset-4"> 
+
+<form name="assetForm" ng-submit="assetInfo.submitAssetDetails()" novalidate>
+<div >
+<md-input-container class="md-block">
+<!-- <label class="fz-18" >Select Asset Type</label>   --> 
+<md-select  ng-model="assetInfo.assetTypeValue" ng-change="assetInfo.assetModelValueChange()" class="col-xs-12 border-016" name="AssetTypeSelect"  required placeholder="Select Asset Type">
+<md-option  ng-value="data" ng-repeat="data in assetInfo.AssetType">{{data.AssetType}}</md-option>
+</md-select>
+<span ng-show="assetForm.AssetTypeSelect.$touched && assetForm.AssetTypeSelect.$error.required" style="color:red">*Please Select Asset Type</span>
+<br>
+</md-input-container>
+</div>
+<div   >
+<md-input-container class="md-block">
+<!-- <label class="fz-18">Select Asset Model</label>   -->
+<md-select  ng-model="assetInfo.assetModelValue" class="col-xs-12" name="AssetModelSelect" placeholder="Select Asset Model" required>
+<md-option value="{{data}}" ng-repeat="data in assetInfo.AssetModel">{{data.AssetModel}}</md-option>
+</md-select>
+<span ng-show="assetForm.AssetModelSelect.$touched && assetForm.AssetModelSelect.$error.required" style="color:red">*Please Select Asset Model</span>
+<br>
+</md-input-container>
+</div>
+ <div  class="padding-left-right" >
+ <md-input-container class="md-block">
+ <label class="fz-18"></label>
+ <input type="text" ng-model="assetInfo.assetId" placeholder="Please Enter Asset Id" id="assetid" name="assetid" class="col-xs-10 z-18" maxlength="12" required/>
+<span ng-show="assetForm.assetid.$touched && assetForm.assetid.$error.required"  style="color:red">*Asset Id is required.</span>
+<p >{{assetInfo.AssetDataCheck}}</p>
+ </md-input-container>
+ </div>
+ <div   ng-show="!assetInfo.others_hide">
+<md-input-container class="md-block">
+<!-- <label class="fz-18">Select Processor</label>  -->
+<md-select  ng-model="assetInfo.processorValue" class="col-xs-12 " name="ProcessorSelect" required placeholder="Select Processor">
+ <md-option ng-value="data" ng-repeat="data in assetInfo.Processor" >{{data.Processor}}</md-option>
+ </md-select>
+<span ng-show="assetForm.ProcessorSelect.$touched && assetForm.ProcessorSelect.$error.required" style="color:red">*Please Select Processor Model</span>
+<br>
+</md-input-container>
+</div>
+<div   ng-show="!assetInfo.others_hide">
+<md-input-container class="md-block">
+<!-- <label class="fz-18">Select RAM</label>  -->
+<md-select    ng-model="assetInfo.ramValue" class="col-xs-12" name="RAMSelect" required placeholder="Select RAM">
+<md-option ng-value="data" ng-repeat="data in assetInfo.RAM">{{data.RAM}}</md-option>
+</md-select>
+<span ng-show="assetForm.RAMSelect.$touched && assetForm.RAMSelect.$error.required" style="color:red">*Please Select RAM Model</span>
+<br>
+</md-input-container>
+</div>
+<div   ng-show="!assetInfo.others_hide">
+<!--  <label>HDD</label> -->
+ <md-input-container class="md-block">
+  
+ <md-select   ng-model="assetInfo.hddValue" class="col-xs-12 " name="HDDSelect"  placeholder="Select HDD" required>
+ <md-option ng-value="data" ng-repeat="data in assetInfo.HDD" >{{data.HDD}}</md-option>
+       </md-select>
+ <span ng-show="assetForm.HDDSelect.$touched && assetForm.HDDSelect.$error.required" style="color:red">*Please Select HDD Model</span>
+  <br>
+ </md-input-container>
+     </div>
+    <div   ng-show="!assetInfo.others_hide">
+          <md-input-container class="md-block">
+     <!-- <label class="fz-18">Select OS Version</label>  -->
+     <!-- <label>OS Version</label> -->
+       <md-select   ng-model="assetInfo.osversionValue" class="col-xs-12" name="OSSelect" required placeholder="Select OS Version">
+      <!-- <md-select-label>{{ assetInfo.osversionValue.OSVersion }}</md-select-label> -->
+         <md-option ng-value="data" ng-repeat="data in assetInfo.OSVersion">{{data.OSVersion}}</md-option>
+       </md-select>
+        <span ng-show="assetForm.OSSelect.$touched && assetForm.OSSelect.$error.required" style="color:red">*Please Select OS Model</span>
+          <br>
+         </md-input-container>
+
+
+     </div>
+      
+
+<div class="leadcheck" style="font-size: 16px;">
+    <label class="checkbox-inline" ng-repeat="data in assetInfo.Accessory" >
+        <md-checkbox ng-model="assetInfo.Accessory_checked[$index]" ng-hide="(!assetInfo.assetTypeValue || assetInfo.assetTypeValue.AssetType=='Windows Phone' || assetInfo.assetTypeValue.AssetType=='Windows Tablet' || assetInfo.assetTypeValue.AssetType=='Android Tablet' ||  assetInfo.assetTypeValue.AssetType=='Apple Tablet' || assetInfo.assetTypeValue.AssetType=='Android Phone' || assetInfo.assetTypeValue.AssetType=='Apple Phone' || assetInfo.assetTypeValue.AssetType=='Apple IPAD' || assetInfo.assetTypeValue.AssetType=='BB Tablet' || assetInfo.assetTypeValue.AssetType=='BB Phone' || assetInfo.assetTypeValue.AssetType=='Apple Watch' || assetInfo.assetTypeValue.AssetType=='Samsung Watch' || assetInfo.assetTypeValue.AssetType=='Other') &&  (data.Accessory=='Mouse' || data.Accessory=='Keyboard' ) "  ng-value="$index">{{data.Accessory}}</md-checkbox>
+    
+         </label>
+    </div>
+    <!-- <button type="submit" ng-click="desk.submitDeskDetails()" class="btn btn-block btn-info" ng-disabled="desk.middle && !desk.EnableSubmitvalue"><i class="glyphicon glyphicon-ok-sign"></i>&nbsp;Submit</button> -->
+ 
+         
+     <md-button class="btn btn-block btn-info"  type="submit" ng-click="assetInfo.submitAssetDetails()"><i class="glyphicon glyphicon-ok-sign"></i>&nbsp;Submit</md-button>
+         
+    
+     </form>
+     </div>
+  

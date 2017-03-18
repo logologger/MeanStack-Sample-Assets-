@@ -1,0 +1,59 @@
+
+      
+
+        
+       
+
+  
+      
+        
+          
+<div class="login_container"></div>
+
+<div class="container" ng-controller="MainController as login">
+ 
+    <div class="row">
+        
+        <div class="" >
+        
+            <div class="login-head ">
+        		<div class="login-sec text-center">
+        <h2>DESS Asset Management</h2>
+        </div>
+        	<div class="login-content clearfix">
+    <form method="post" ng-submit="login.doLogin()" name="loginForm" class="col-md-12">
+        
+  <md-input-container class="col-md-12" flex>
+    <label>Employee ID:</label>
+    <input type="number" ng-model="login.loginData.username" name="username"  pattern="[0-9]*" maxlength="10" required  ng-keypress="limitKeypress($event,search.main,4)">
+   <div ng-messages="loginForm.username.$error">
+                     <div ng-message="required">Employee Id is required.</div>
+          </div>
+  </md-input-container >
+  <md-input-container class="col-md-12" flex>
+    <label>Password</label>
+    <input type="{{login.showPwd}}" name="password" ng-model="login.loginData.password" required="" id="password"   />
+    <img src="../../../assets/image/eyes.png" ng-click="login.showPassword()"  ng-show="login.checktoShowPassword()" name="show_password" height="25px"/>
+   <div ng-messages="loginForm.password.$error">
+                 
+                      <div ng-message="required">Password is required.</div>
+                  </div>
+  </md-input-container>
+  
+
+   
+    
+   
+    <button type="submit" class="md-block btn mb-10 text-center" value="login" ng-disabled="loginForm.username.$dirty && loginForm.username.$invalid || loginForm.password.$invalid">Submit</button>
+     <span class="fz-14" style="color:red">{{login.error}}</span>
+  <!-- </div> -->
+    
+    </form>
+    </div>
+         </div>
+            </div>
+    </div>
+    <div class="clearfix footer">Copyright © 2016 Tata Consultancy Services | Terms of Use | Browser and Display Compatibility
+Entry to this site is restricted to employees and affiliates of Tata Consultancy Services Limited</div>
+</div>
+  

@@ -1,0 +1,20 @@
+angular.module('AssetService',[])
+.factory('assetService',function($http){
+    
+    
+    var assetServer={};
+    
+    assetServer.assetSave=function(data){
+        console.log("Sending this data "+JSON.stringify(data)); 
+        return $http.post('/api/assetSave',{data});
+
+    }
+    
+
+    assetServer.assetDisplay=function(){
+    	 return $http.get('/api/getAllAsset');
+     	 //console.log("Displaying data"+JSON.stringify(a));
+    }
+    
+    return assetServer;
+})

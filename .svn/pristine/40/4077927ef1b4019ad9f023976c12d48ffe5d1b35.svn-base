@@ -1,0 +1,46 @@
+<div class="jumbotron text-center" ng-if="!main.loggedIn">
+
+    <div>
+    <h1>Welcome To TCS Asset Management System!</h1>
+    </div>
+    
+    <div>
+    <div ng-controller="homeCtrl">
+    <p>Login to Check Your Assets</p>
+        <a href="login" class="btn btn-success">Login</a>
+    </div>
+    </div>
+    
+
+
+
+
+
+
+<!-- <div class="row" ng-if="main.loggedIn">
+
+<div class="col-md-3">
+    </div>
+    <div class="col-md-4" ng-controller="storyController as story">
+    <div class="row">
+        <div class="panel panel-primary">
+            
+            <div class="panel-heading">
+            Write your Story
+            </div>
+            <div class="panel-body">
+            <form ng-submit="story.createStory()">
+                <input class="form-control input-lg" name="story" ng-model="story.storyData.content" placeholder="..."  >
+                </form>
+            </div>
+        </div>
+        <div class="panel panel-success">
+        <div class="panel-body" ng-repeat="EachStory in story.stories">
+            {{EachStory.content}}</div>
+        </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+    </div>
+    
+</div> -->

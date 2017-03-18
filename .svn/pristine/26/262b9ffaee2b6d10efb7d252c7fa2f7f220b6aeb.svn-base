@@ -1,0 +1,23 @@
+<div class="container" ng-controller="MainController as login">
+ 
+    <div class="row">
+        
+        <div class="col-sm-6 col-md-4 col-md-offset-4">
+    <form method="post" ng-submit="login.doLogin()" name="loginForm">
+    
+       Employee-ID: <input type="text" class="form-control" name="username" ng-model="login.loginData.username" pattern="^[0-9]*$" required/>
+        <span ng-show="loginForm.username.$touched && loginForm.username.$invalid" style="color:red">*Employee-ID is not valid.</span>
+        <br>
+        Password:<input type="password" class="form-control" name="password" ng-model="login.loginData.password" required />
+        <span ng-show="loginForm.password.$touched && loginForm.password.$invalid" style="color:red">*Password is required.</span>
+        <br>
+        
+        <button type="submit" class="btn btn-success" value="login" ng-disabled="loginForm.username.$dirty && loginForm.username.$invalid || loginForm.password.$invalid">Submit</button>
+        &nbsp;&nbsp;&nbsp;
+        <span style="color:red">{{login.error}}</span>
+    
+    </form>
+         </div>
+    </div>
+</div>
+    

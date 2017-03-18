@@ -1,0 +1,100 @@
+angular.module('mainController',[])
+
+.controller('MainController',function($rootScope,$location,Auth,CommonDataFactory)
+           {
+    
+    var vm=this;
+    
+   vm.loggedIn=Auth.isLoggedIn();
+    
+    $rootScope.$on('$routeChangeStart',function()
+    {
+                       vm.loggedIn=Auth.isLoggedIn(); 
+
+                       Auth.getUser()
+                       .then(function(data)
+                            {
+                           vm.user=data.data;
+                       });
+                });
+    
+    vm.doLogin=function()
+    {
+        vm.processing=true;
+        vm.error='';
+        Auth.login(vm.loginData.username,vm.loginData.password)
+        .success(function(data)
+                {
+            vm.processing=false;
+            Auth.getUser()
+            .then(function(data)
+                 {
+               vm.user=data.data; 
+            });
+            
+            if(data.success)
+                {
+                    //Here we will check for Desk
+                    
+                      vm.deskCheck=Auth.deskCheck()
+    .success(function(data){
+            
+            console.log("Desk checking "+data.result);
+//            return data;
+                          
+                          
+            if(data.result===false){
+//                vm.deskCheck_controller=true;
+                
+                $location.path('/desk');
+            }
+            else{
+//                 vm.deskCheck_controller=false;
+              
+                CommonDataFactory.setDeskNo(data.DeskNo);
+                console.log(" CommonDataFactory.getDeskNo "+data.DeskNo+"  "+ CommonDataFactory.getDeskNo());
+                //Need to Use CommonDataFactory and CommonServiceFactory
+                $location.path('/click');
+            }
+        });
+    
+                    
+                    
+                  //  $location.path('/desk');
+                    
+                    
+                    
+                    
+                }
+            else{
+                vm.error=data.message;
+            }
+            
+        });
+        
+    }
+    
+    vm.doLogout=function()
+    {
+        Auth.logout();
+        $location.path('/login');
+    }
+    
+    
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

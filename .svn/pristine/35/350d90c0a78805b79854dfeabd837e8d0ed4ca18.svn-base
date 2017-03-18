@@ -1,0 +1,6 @@
+var app=angular.module("myApp",['mainController','authService','appRoutes','userCtrl','userService','storyService','StoryController','DeskService','deskController','AssetController','CommonData','AssetService','AssetDetailController','ngTable','AdminController','LocationController'])
+
+.config(function($httpProvider)
+       {
+    $httpProvider.interceptors.push('AuthInterceptor');
+})

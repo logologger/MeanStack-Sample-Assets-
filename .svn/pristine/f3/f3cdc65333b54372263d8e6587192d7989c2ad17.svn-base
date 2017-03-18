@@ -1,0 +1,267 @@
+<div>
+<div ng-if="isAdmin()" style="float:right"><a href="/adminlink"><span class="glyphicon glyphicon-user lead">&nbsp;Admin</span></a></div> 
+  <div class="row">
+    <div class="col-md-4">
+  <div ng-controller="LocationController as loc">
+<span class="lead">Your location is <b>{{LocationValue}}</b> &nbsp;&nbsp;
+    <a ng-show="!showThing1" ng-click="loc.showItLoc(LocationValue);showThing1 = !showThing1" >
+    <span class="glyphicon glyphicon-pencil"></span>
+    </a>
+      </span>
+<!-- <span >Your location is</span>
+  <b>{{LocationFinal}}</b>
+ <button ng-show="!showThing1" ng-click="showItLoc(LocationFinal);showThing1 = !showThing1">edit location</button> -->
+ 
+ <span>       
+<select  ng-model="editLocation" ng-show="showThing1" class="form-control">
+
+<option value="">Select Location</option>
+<option  ng-repeat="data in loc.AllLocations" value="{{data}}">{{data.Location}}</option>
+
+</select>
+    
+
+<span class="glyphicon glyphicon-ok lead" style="color:blue" ng-click="loc.showItLocation(); showThing1 = false; LocationValue=LocationFinal" ng-show="showThing1" title="Update">SAVE</span>
+    
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span class="glyphicon glyphicon-remove lead" style="color:red" ng-click="showThing1 = false;" ng-show="showThing1" title="Cancel">CANCEL</span>
+</span>
+     </div>
+
+
+      </div>
+      
+      
+      
+</div> 
+<br>
+<p class="lead">Desk Allocated to you  <b>{{DeskNumber}}</b>   &nbsp;&nbsp;<a href="/desk" ><span class="glyphicon glyphicon-pencil"></span></a></p>
+
+    
+
+
+<span style="color:red">{{assetId_alert}}</span>
+<div class="table-responsive">
+<!--<table   class="table" datatable="ng">-->
+    <!--  show-filter="true"-->
+    <p class="lead"><i>Desktop Assets</i></p>
+    <p ng-show="hideDesktopDetails" class="alert alert-info" style="font-size:15px">No Desktop Assets Added  !</p>
+    <table   class="table table-bordered" ng-table="assetTable" ng-hide="hideDesktopDetails">
+        
+<!--
+<thead class="thead-inverse">
+    <tr>
+        <th>AssetType</th>
+        <th>Asset Model</th>
+        <th>Processor</th>
+        <th>RAM</th>
+        <th>HDD</th>
+        <th>Version</th>
+    </tr>
+    </thead>
+
+-->
+    <tbody>
+        
+    <tr ng-repeat="asset in data" >
+        
+        <td> {{$index+1}}</td>
+        <td data-title=" 'AssetType' " sortable="'AssetType.AssetType'" >
+<!--            <span ng-show="displayUpdate[$index]">{{asset.AssetType.AssetType}}</span>-->
+            <span >{{asset.AssetType.AssetType}}</span>
+<!--            <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.AssetType.AssetType" ng-value="asset.AssetType.AssetType" class="form-control"/></td>-->
+            
+            
+        <td data-title=" 'Asset Model' "  sortable="'AssetModel.AssetModel'" >
+            <span >{{asset.AssetModel.AssetModel}}</span>
+<!--            <span ng-show="displayUpdate[$index]">{{asset.AssetModel.AssetModel}}</span>-->
+<!--            <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.AssetModel.AssetModel" ng-value="asset.AssetModel.AssetModel" class="form-control"/>-->
+        </td>
+        <td data-title=" 'Asset ID' "  sortable="'AssetID'" filter="{ 'AssetID': 'text' }">
+            <span >{{asset.AssetID}}</span>
+<!--            <span ng-show="displayUpdate[$index]">{{asset.AssetID}}</span>-->
+<!--            <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.AssetID" ng-value="asset.AssetID" ng-change="checkUniqueAssetId(asset.AssetID)" class="form-control"/>-->
+            
+        </td>
+        <td data-title="'Processor'"  sortable="'Processor.Processor'" >
+            <span ng-show="displayUpdate[$index]">{{asset.Processor.Processor}}</span>
+            <input type="hidden" ng-init="updatedAsset.Processor=processor" ng-model="updatedAsset.Processor"/>
+            <select  ng-model="asset.Processor.Processor" class="col-xs-12 form-control" ng-hide="displayUpdate[$index]">
+                    <option value="">--SELECT PROCESSOR--</option>
+       	            <option value="{{data.Processor}}" ng-repeat="data in processor">{{data.Processor}}</option>
+                    
+            </select>
+            
+<!--            <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.Processor.Processor" ng-value="asset.Processor.Processor" class="form-control"/>-->
+        </td>
+        <td data-title="'RAM'" sortable="'RAM.RAM'" >
+            <span ng-show="displayUpdate[$index]">{{asset.RAM.RAM}}</span>
+            <input type="hidden" ng-init="updatedAsset.RAM=RAM" ng-model="updatedAsset.RAM"/>
+<!--            <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.RAM.RAM" ng-value="asset.RAM.RAM" class="form-control"/>-->
+               <select   class="col-xs-12 form-control" ng-hide="displayUpdate[$index]" ng-model="asset.RAM.RAM">
+                     <option value="">--SELECT RAM--</option>
+                     <option value="{{data.RAM}}" ng-repeat="data in RAM">{{data.RAM}}</option>
+               </select>
+       
+        </td>
+<!--        <td>{{asset.RAM.RAM}}</td>-->
+        <td data-title="'HDD'"  sortable="'HDD.HDD'" >
+            <span ng-show="displayUpdate[$index]">{{asset.HDD.HDD}}</span>
+             <input type="hidden" ng-init="updatedAsset.HDD=HDD" ng-model="updatedAsset.HDD"/>
+<!--             <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.HDD.HDD" ng-value="asset.HDD.HDD" class="form-control"/>-->
+              <select   ng-hide="displayUpdate[$index]" ng-model="asset.HDD.HDD" class="col-xs-12 form-control" >
+                    <option value="">--SELECT HDD--</option>
+       	            <option value="{{data.HDD}}" ng-repeat="data in HDD" >{{data.HDD}}</option>
+       </select>
+            
+        </td>
+        <td data-title="'Version'">
+            <span ng-show="displayUpdate[$index]">{{asset.OSVersion[0].OSVersion}}</span>
+            <input type="hidden" ng-init="updatedAsset.OSVersion=OSVersion" ng-model="updatedAsset.OSVersion"/>
+<!--             <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.OSVersion[0].OSVersion" ng-value="asset.OSVersion[0].OSVersion" class="form-control"/>-->
+            <select   ng-hide="displayUpdate[$index]" ng-model="asset.OSVersion[0].OSVersion" class="col-xs-12 form-control" >
+                    <option value="">--SELECT OS VERSION--</option>
+                    <option value="{{data.OSVersion}}" ng-repeat="data in OSVersion">{{data.OSVersion}}</option>
+            </select>
+        </td>
+        <td data-title="'Accessory'">
+        <span ng-show="displayUpdate[$index]" ng-repeat="accessory in asset.Accessory">{{accessory.Accessory}}{{ $last ? '' : ($index==asset.Accessory.length-2) ? ' and ' : ' , '}}</span>
+        
+        </td>
+        
+<!--
+//Using ng-options in angularJS
+        <td>
+        <select ng-model="asset.OSVersion[0].OSVersion" ng-options="data as data.OSVersion for data in OSVersion">
+                   
+        </select>
+        </td>
+-->
+        <td >
+            <span class="glyphicon glyphicon-trash" ng-click="deleteRow(asset.AssetID,$index)" ng-show="displayUpdate[$index]"></span>
+            <span class="glyphicon glyphicon-remove-sign" style="color:red" ng-hide="displayUpdate[$index]" ng-click="resetUpdate($index)"></span>
+            
+            
+        </td>
+        <td>
+            <span class="glyphicon glyphicon-pencil" style="color:blue" ng-click="updateRow(asset.AssetID,$index,asset)" ng-show="displayUpdate[$index]"></span>
+            <span class="glyphicon glyphicon-ok" style="color:green" ng-hide="displayUpdate[$index]" ng-click="performUpdate(asset,$index)"></span>
+        </td>
+    </tr>
+   
+    </tbody>
+</table> 
+    <p class="lead"><i>Phone and Tablet Assets</i></p>
+    <p ng-show="hideTabPhoneDetails" class="alert alert-info">No Phone or Tablets Assets Added !</p>
+    <table class="table table-bordered" ng-table="assetPhoneTabTable" ng-hide="hideTabPhoneDetails">
+    <tbody>
+     <tr ng-repeat="asset in PhoneTabdata"> <td> {{$index+1}}</td>
+        <td data-title=" 'AssetType' " sortable="'AssetType.AssetType'" >
+<!--            <span ng-show="displayUpdate[$index]">{{asset.AssetType.AssetType}}</span>-->
+            <span >{{asset.AssetType.AssetType}}</span>
+<!--            <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.AssetType.AssetType" ng-value="asset.AssetType.AssetType" class="form-control"/></td>-->
+            
+            
+        <td data-title=" 'Asset Model' "  sortable="'AssetModel.AssetModel'" >
+            <span >{{asset.AssetModel.AssetModel}}</span>
+<!--            <span ng-show="displayUpdate[$index]">{{asset.AssetModel.AssetModel}}</span>-->
+<!--            <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.AssetModel.AssetModel" ng-value="asset.AssetModel.AssetModel" class="form-control"/>-->
+        </td>
+        <td data-title=" 'Asset ID' "  sortable="'AssetID'" filter="{ 'AssetID': 'text' }">
+            <span >{{asset.AssetID}}</span>
+<!--            <span ng-show="displayUpdate[$index]">{{asset.AssetID}}</span>-->
+<!--            <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.AssetID" ng-value="asset.AssetID" ng-change="checkUniqueAssetId(asset.AssetID)" class="form-control"/>-->
+            
+        </td>
+<!--
+        <td data-title="'Processor'"  sortable="'Processor.Processor'" >
+            <span ng-show="displayUpdate[$index]">{{asset.Processor.Processor}}</span>
+            <input type="hidden" ng-init="updatedAsset.Processor=processor" ng-model="updatedAsset.Processor"/>
+            <select  ng-model="asset.Processor.Processor" class="col-xs-12 form-control" ng-hide="displayUpdate[$index]">
+                    <option value="">--SELECT PROCESSOR--</option>
+       	            <option value="{{data.Processor}}" ng-repeat="data in processor">{{data.Processor}}</option>
+                    
+            </select>
+            
+            <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.Processor.Processor" ng-value="asset.Processor.Processor" class="form-control"/>
+        </td>
+-->
+<!--
+        <td data-title="'RAM'" sortable="'RAM.RAM'" >
+            <span ng-show="displayUpdate[$index]">{{asset.RAM.RAM}}</span>
+            <input type="hidden" ng-init="updatedAsset.RAM=RAM" ng-model="updatedAsset.RAM"/>
+            <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.RAM.RAM" ng-value="asset.RAM.RAM" class="form-control"/>
+               <select   class="col-xs-12 form-control" ng-hide="displayUpdate[$index]" ng-model="asset.RAM.RAM">
+                     <option value="">--SELECT RAM--</option>
+                     <option value="{{data.RAM}}" ng-repeat="data in RAM">{{data.RAM}}</option>
+               </select>
+       
+        </td>
+-->
+<!--        <td>{{asset.RAM.RAM}}</td>-->
+<!--
+        <td data-title="'HDD'"  sortable="'HDD.HDD'" >
+            <span ng-show="displayUpdate[$index]">{{asset.HDD.HDD}}</span>
+             <input type="hidden" ng-init="updatedAsset.HDD=HDD" ng-model="updatedAsset.HDD"/>
+             <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.HDD.HDD" ng-value="asset.HDD.HDD" class="form-control"/>
+              <select   ng-hide="displayUpdate[$index]" ng-model="asset.HDD.HDD" class="col-xs-12 form-control" >
+                    <option value="">--SELECT HDD--</option>
+       	            <option value="{{data.HDD}}" ng-repeat="data in HDD" >{{data.HDD}}</option>
+       </select>
+            
+        </td>
+-->
+<!--
+        <td data-title="'Version'">
+
+            <span ng-show="displayUpdate[$index]">{{asset.OSVersion[0].OSVersion}}</span>
+            <input type="hidden" ng-init="updatedAsset.OSVersion=OSVersion" ng-model="updatedAsset.OSVersion"/>
+             <input type="text" ng-hide="displayUpdate[$index]" ng-model="asset.OSVersion[0].OSVersion" ng-value="asset.OSVersion[0].OSVersion" class="form-control"/>
+            <select   ng-hide="displayUpdate[$index]" ng-model="asset.OSVersion[0].OSVersion" class="col-xs-12 form-control" >
+                    <option value="">--SELECT OS VERSION--</option>
+                    <option value="{{data.OSVersion}}" ng-repeat="data in OSVersion">{{data.OSVersion}}</option>
+            </select>
+        </td>
+-->
+        <td data-title="'Accessory'">
+
+        <span ng-hide="displayUpdate[$index]" ng-repeat="accessory in asset.Accessory">{{accessory.Accessory}}{{ $last ? '' : ($index==asset.Accessory.length-2) ? ' and ' : ' , '}}</span>
+<!--
+        <label ng-show="displayUpdate[$index]" class="checkbox-inline" ng-repeat="data in asset.Accessory" >
+     <input type="checkbox" ng-model="asset.Accessory_checked[$index]" ng-value="$index">
+    {{data.Accessory}}
+         </label>
+-->
+        </td>
+        
+<!--
+//Using ng-options in angularJS
+        <td>
+        <select ng-model="asset.OSVersion[0].OSVersion" ng-options="data as data.OSVersion for data in OSVersion">
+                   
+        </select>
+        </td>
+-->
+        <td >
+            <span class="glyphicon glyphicon-trash" ng-click="deleteTabletPhoneRow(asset.AssetID,$index)" ng-show="displayTabPhoneUpdate[$index]"></span>
+            <span class="glyphicon glyphicon-remove-sign" style="color:red" ng-hide="displayTabPhoneUpdate[$index]" ng-click="resetPhoneTabUpdate($index)"></span>
+            
+            
+        </td>
+        <td>
+            <span class="glyphicon glyphicon-pencil" style="color:blue" ng-click="phoneTabupdateRow(asset.AssetID,$index,asset)" ng-show="displayTabPhoneUpdate[$index]"  data-toggle="tooltip" title="Update Asset"></span>
+            <span class="glyphicon glyphicon-ok" style="color:green" ng-hide="displayTabPhoneUpdate[$index]" ng-click="performUpdate(asset,$index)"></span>
+        </td></tr>
+        
+    </tbody>
+    </table>
+    
+
+
+<!--<input id="add" type="image" ng-src="./libs/image/add_btn.png" alt="Add"  />-->
+    <span style="font-size:2em; color:green;" class="glyphicon glyphicon-plus" ng-click="displayAsset()" ></span>
+<label for="id">Add More Assets</label>
+   
+
+</div>
+</div>

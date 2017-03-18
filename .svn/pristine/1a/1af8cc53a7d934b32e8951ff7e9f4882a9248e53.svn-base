@@ -1,0 +1,63 @@
+angular.module('appRoutes',['ngRoute'])
+
+.config(function($routeProvider,$locationProvider)
+       {
+    $routeProvider
+    
+    .when('/',{
+        templateUrl:'app/components/Login/login.html',
+        controller:'MainController',
+        controllerAs:'main'
+    })
+    .when('/login',{
+        templateUrl:'app/components/Login/login.html',
+        isLogin:true
+    })
+
+    .when('/desk',{
+        
+        templateUrl:'app/components/Desk/desk.html',
+        controller:'DeskController',
+         controllerAs:'desk'
+    })
+    .when('/submit',{
+         templateUrl:'app/components/Assets/AssetFetch/AssetInfo.html',
+       controller:'assetInfoCtrl',
+         controllerAs:'assetInfo'
+    })
+    .when('/click',{
+        templateUrl:'app/components/Assets/AssetInfo/AssetDetails.html',
+        controller:'assetDetailController'
+        
+    })
+     .when('/adminlink',{
+        
+        templateUrl:'app/components/Admin/AdminDetails.html',
+        controller:'AdminController'
+         
+    })
+
+
+    
+    $locationProvider.html5Mode(true);
+})
+
+//.run(['$rootScope', '$location', 'Auth', function ($rootScope, $location, Auth) {
+//    $rootScope.$on('$routeChangeStart', function (event) {
+//
+//        if (!Auth.isLoggedIn()) {
+//            
+//            
+//            console.log('DENY');
+//            event.preventDefault();
+//            $location.path('/login');
+//        }
+//        else {
+//           
+//            console.log('ALLOW');
+//            $location.path('/submit');
+//        }
+//    });
+//}]);
+
+

@@ -1,0 +1,125 @@
+angular.module('AssetController',[])
+.controller('assetInfoCtrl',function(DService,$scope,$location,CommonDataFactory,assetService)
+           {
+    
+    var vm=this;
+    var arr1=[];
+    var arr2=[];
+    // $scope.DisplayTable;
+    console.log("Come to Assets "+ CommonDataFactory.getDeskNo());
+    vm.DeskNumber=CommonDataFactory.getDeskNo();
+    
+    vm.EmployeeAsset={};
+    
+    $scope.assetDetails;
+    //to show all the desk in the  select option
+    vm.AssetType=DService.giveAllAssetType()
+   .success(function(data){
+    
+       
+       vm.AssetType=data;
+   })
+     vm.AssetModel=DService.giveAllAssetModel()
+   .success(function(data){
+    
+        vm.AssetModel=data;
+        console.log(JSON.stringify(vm.AssetModel));
+   })
+
+  
+   vm.Procesoor=DService.giveAllProcessor()
+   .success(function(data){
+    
+        vm.Processor=data;
+   })
+   vm.RAM=DService.giveAllRAM()
+   .success(function(data){
+    
+        vm.RAM=data;
+   })
+   vm.HDD=DService.giveAllHDD()
+   .success(function(data){
+    
+        vm.HDD=data;
+   })
+   vm.OSVersion=DService.giveAllOSVersion()
+   .success(function(data){
+    
+        vm.OSVersion=data;
+   })
+
+   vm.Accessory=DService.giveAllAccessory()
+   .success(function(data){
+    
+        vm.Accessory=data;
+        console.log("accessory"+vm.Accessory);
+   })
+  
+    
+    
+     vm.submitAssetDetails=function()
+     {
+         //get the user id and desk id from here
+  		
+        //DService.saveDesk(vm.selectedDesk);
+       // console.log("Asset Info"+JSON.stringify($scope.assetInfo));
+      //  $scope.assetDetails=$scope.assetInfo;
+         var data_to_sent={};
+         
+        var assetInformation_post=JSON.parse(vm.assetTypeValue);
+         
+         console.log(assetInformation_post._id);
+         data_to_sent.assetType=assetInformation_post._id;
+         
+        assetInformation_post=JSON.parse(vm.assetModelValue);
+         data_to_sent.assetModel=assetInformation_post._id;
+         
+         assetInformation_post=JSON.parse(vm.processorValue);
+         data_to_sent.processorValue=assetInformation_post._id;
+         
+         assetInformation_post=JSON.parse(vm.ramValue);
+         data_to_sent.ramValue=assetInformation_post._id;
+         
+         assetInformation_post=JSON.parse(vm.hddValue);
+         data_to_sent.hddValue=assetInformation_post._id;
+         
+          assetInformation_post=JSON.parse(vm.osversionValue);
+         data_to_sent.osversionValue=assetInformation_post._id;
+         
+         console.log(data_to_sent);
+         
+        assetService.assetSave(data_to_sent).
+        success(function(data){
+            
+            console.log(data);
+            $location.path('/click');
+         
+            
+        });
+
+
+        
+
+        //$location.path('/click');
+     }
+    
+    // vm.checkDeskDetails=function(){
+        
+    //    console.log(DService.checkDesk());
+    // }
+     // assetService.assetDisplay().success(function(data){
+     //        console.log("Displaydata"+JSON.stringify(data));
+     //        $scope.DisplayTable= data;
+
+
+     //     });
+
+    vm.AssetTable = function() {
+
+        console.log("path changed");
+       $location.path("/click");
+
+    }
+    
+    
+})

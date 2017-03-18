@@ -1,0 +1,38 @@
+
+<div>
+ <div ng-controller="assetDetailController" class="adminlink" ng-show="isAdmin()" >
+<a ui-sref="submit.adminlink"><span class="glyphicon glyphicon-user lead">Admin</span></a></div> 
+<div ng-controller="LocationController as loc">
+ <span class="lead">Select the location : <b>{{ loc.LocationValue!=null ? loc.LocationValue : assetInfo.LocationValue }}</b><a class="ml-18" ng-click="loc.openDialog($event)"><span class="glyphicon glyphicon-pencil"></span></a></span>
+  </div>
+<div class="col-md-6 col-md-offset-4 mt-10">
+
+<form  novalidate ng-submit="desk.submitDeskDetails()">
+<p class="lead">Wing</p>
+<md-select ng-model="desk.selectedWing"  ng-change="desk.getDeskBasedOnWing($index+1)">
+<md-option  ng-selected="$index == 0"  ng-repeat="data in desk.allWings" ng-value="data">{{data.Wing}}</md-option>
+</md-select><br>
+    <p class="lead">Desk</p>
+     <md-input-container class="md-block">
+     <!--  <label>Select A Desk</label> -->
+    
+<md-select ng-model="desk.selectedDesk" placeholder="Select A Desk">
+<md-option    ng-repeat="data in desk.AllDesks" ng-value="data">{{data.Desk}}</md-option>
+</md-select>
+</md-input-container>
+<md-checkbox ng-model="desk.middle">Middle Desk</md-checkbox>
+<br>
+<br> <div ng-hide="!desk.middle"> <p class="lead"> Select Another Desk</p>
+<md-input-container class="md-block">
+<!-- <label>Select Another Desk</label>    --> 
+<md-select ng-model="desk.selectedDesk2" ng-change="desk.EnableSubmit()" placeholder="Select Another Desk">
+<md-option     ng-repeat="data in desk.AllDesks" ng-value="data">{{data.Desk}}</md-option>
+</md-select>
+</md-input-container>
+</div>
+<button type="submit" ng-click="desk.submitDeskDetails()" class="btn btn-block btn-info" ng-disabled="desk.middle && !desk.EnableSubmitvalue"><i class="glyphicon glyphicon-ok-sign"></i>&nbsp;Submit</button>
+
+</form>
+</div>
+</div>
+     

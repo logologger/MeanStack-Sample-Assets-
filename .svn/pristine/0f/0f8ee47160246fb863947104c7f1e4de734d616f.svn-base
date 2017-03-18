@@ -1,0 +1,55 @@
+angular.module('DeskService',[])
+
+.factory('DService',function($http){
+    
+    
+    var allDesk={};
+    
+    allDesk.giveAll=function()
+    {
+    
+   return  $http.get('/api/desk');
+    
+    }
+    allDesk.giveAllAssetType=function()
+    {
+     return $http.get('/api/assetType');
+    }
+
+    allDesk.giveAllAssetModel=function()
+    {
+        return $http.get('/api/assetModel');
+    }
+    allDesk.giveAllProcessor=function()
+    {
+        return $http.get('/api/processor');
+    }
+    allDesk.giveAllRAM=function()
+    {
+        return $http.get('/api/ram');
+    }
+    allDesk.giveAllHDD=function()
+    {
+        return $http.get('/api/hdd');
+    }
+    allDesk.giveAllOSVersion=function()
+    {
+        return $http.get('/api/osversion');
+    }
+    allDesk.giveAllAccessory=function()
+    {
+        return $http.get('/api/accessory');
+    }
+    
+    allDesk.saveDesk=function(Deskdata)
+    {
+        return $http.post("/api/deskSave",Deskdata);
+    }
+    
+    allDesk.checkDesk=function(){
+        return $http.get('/api/checkDesk');
+    }
+    
+    
+    return allDesk;
+})

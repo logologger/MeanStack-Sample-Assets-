@@ -1,0 +1,30 @@
+angular.module('AssetDetailController',[])
+.controller('assetDetailController',function($location,$scope,assetService,CommonDataFactory)
+           {
+    
+    var vm=this;
+    //vm.DeskNumber;
+
+    $scope.DisplayTable;
+     console.log("Come to Assets "+ CommonDataFactory.getDeskNo());
+    
+    $scope.DeskNumber=CommonDataFactory.getDeskNo();
+    console.log("DeskNo"+$scope.DeskNumber);
+
+    $scope.displayAsset=function()
+    {
+        //get the user id and desk id from here
+        console.log("submit");
+        $location.path('/submit');
+        
+        
+    }
+    
+     assetService.assetDisplay().success(function(data){
+            console.log("Displaydata"+JSON.stringify(data));
+            $scope.DisplayTable= data;
+
+
+         });
+    
+})

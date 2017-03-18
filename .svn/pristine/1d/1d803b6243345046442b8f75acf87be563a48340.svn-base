@@ -1,0 +1,19 @@
+angular.module('HomeController',['ui.bootstrap'])
+.controller('homeCtrl',function()
+           {  
+        $scope.login = function () {
+
+          var modalOptions = {
+              closeButtonText: 'Cancel',
+              submitForm : function(form) {
+                if(form.$valid) {
+                console.log('Loggin in');
+              }
+              }
+          };
+
+          modalService.showModal({}, modalOptions).then(function (result) {
+              console.log('completed');
+          });
+      };
+})
